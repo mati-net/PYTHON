@@ -4,8 +4,14 @@
 
 import random
 
+#####################
+## CARDS DEFINITION 
+
 SUITE='H D S C'.split()
 RANKS='2 3 4 5 6 7 8 9 10 J Q K A'.split()
+
+#####################
+## CLASS DEFINITION
 
 class Deck():
     """
@@ -27,10 +33,10 @@ class Deck():
             for n in range(len(self.ranks)):
                 self.deck.append(self.ranks[n]+self.suite[i])
         random.shuffle(self.deck)
-        print('Se creo un nuevo mazo')
+        print('Se ha barajado el mazo')
 
 
-    def split(self):
+    def split_deck(self):
         self.hdeck1=self.deck[0:26]
         self.hdeck2=self.deck[26:52]
         print('El mazo se a partido en 2')
@@ -70,13 +76,9 @@ class Player():
         self.deck = deck
         self.stack = stack
 
-#    def mod_stack(self,action,value):
-#        if action == 'a' :
-#            self.stack.append(value)
-#        if action == 'e' :
-#            self.stack.extend(value)
 
-## GAME PLAY
+################
+## GAME PLAY 
 
 input('Bienvenido a la GUERRA, presiona enter y empecemos ...')
 
@@ -85,66 +87,85 @@ mydeck=Deck()
 
 # Creo un nuevo maso aleatorio
 mydeck.create()
-#print(mydeck.deck)
 
 # Divido el maso 2
-mydeck.split()
+mydeck.split_deck()
 print()
 
+# Le asigno a cada jugador una mitad del mazo aleatorio
 player_1=Player(mydeck.hdeck1,[])
 player_2=Player(mydeck.hdeck2,[])
 
-#print(player_1.deck)
-#print(player_2.deck)
-
+# El juego esta ON
 game_on= True
 
+# Mientras que todavia el juego esta ON, se juega una mano.
+# Al final se verifican la cantidad de cartas.
 while game_on:
     input('Presiona enter para Jugar una mano')
+    
+    # Se inicializa el stack de guerra y se define la mano.
     war_stack=[]
     hand=Hand()
+    
+    # Se juega una mano
     hand.play(player_1.deck,player_2.deck)
     print('El Jugador 1 ha jugado: ',hand.p1)
     print('El jugador 2 ha jugado: ',hand.p2)
 
-    if RANKS.index(hand.p1[:-1]) == RANKS.index(hand.p2[:-1]) and len(player_1.deck) == len(player_2.deck) => 3:
-        print('Las cartas tienen el mismo valor!')
-        print('GUERRA!')
-        input('Presiona enter para Jugar')
+    # Si hay igualdad en el valor de las cartas, hay Guerra.
+    if RANKS.index(hand.p1[:-1]) == RANKS.index(hand.p2[:-1]): 
         war = True
-        while war:
-            hand.war(war_stack,player_1.deck,player_2.deck)
+        while war :
+            print('Las cartas tienen el mismo valor!')
+            print('GUERRA!')
+
+            if len(player_1.deck) == len(player_2.deck) >= 3:
+                hand.war(war_stack,player_1.deck,player_2.deck)
+            elif 1 < len(player_1.deck) == len(player_2.deck) < 3 :
+                war_stack.append(hand.p1.pop())
+                war_stack.append(hand.p2.pop())
+                print('No hay suficientes cartas para jugar una guerra normal')
+                print('Se descartara solo una carta')
+                war_stack.append(p1_deck.pop())
+                war_stack.append(p2_deck.pop())
+            elif len(player_1.deck) == len(player_2.deck) == 1 :
+                print('No hay suficientes cartas para jugar una guerra normal!')
+                print('Solo les queda 1 carta a cada uno!')
+                print('No se descartan cartas, se juega solo la siguiente')
+                war_stack.append(hand.p1)
+                war_stack.append(hand.p2)
+
+            input('Presiona enter para Jugar')
             hand.play(player_1.deck,player_2.deck)
             print('El Jugador 1 ha jugado: ',hand.p1)
             print('El Jugador 2 ha jugado: ',hand.p2)
+
             if RANKS.index(hand.p1[:-1]) == RANKS.index(hand.p2[:-1]):
                 print('Las cartas tienen el mismo valor de nuevo!')
                 print('OMG')
                 print('GUERRA!')
+                input('Presiona enter para Jugar')
             else:
                 war= False
-            print('el stack de guerra es: ',war_stack)
-    elif RANKS.index(hand.p1[:-1]) == RANKS.index(hand.p2[:-1]) and 1 < len(player_1.deck) == len(player_2.deck) < 3 :
-        print('No hay suficientes cartas para jugar una guerra normal')
-        print('Se descartara solo una carta')
-        war_stack.append(hand.p1)
-        war_stack.append(hand.p1)
+
+            if len(player_1.deck) == len(player_2.deck) == 0 and  war:
+                print('Ya no se puede jugar por falta de cartas!')
+                print('Se descarta el stack de ',len(war_stack),' cartas')
+                break
+
+    # Si no existe guerra verifico quien gano la mano
     if RANKS.index(hand.p1[:-1]) > RANKS.index(hand.p2[:-1]):
         print('GANO JUGADOR 1')
         player_1.stack.extend(war_stack)
         player_1.stack.append(hand.p1)
         player_1.stack.append(hand.p2)
-    else:
+    elif RANKS.index(hand.p1[:-1]) < RANKS.index(hand.p2[:-1]):
         print('GANO JUGADOR 2')
         player_2.stack.extend(war_stack)
         player_2.stack.append(hand.p1)
         player_2.stack.append(hand.p2)
 
-
-    #print('Stack jugador 1',player_1.stack)
-    #print('Deck jugador 1',player_1.deck)
-    #print('Stack jugador 2',player_2.stack)
-    #print('Deck jugador 2',player_2.deck)
     if len(player_1.deck) == len(player_2.deck) == 0:
         game_on=False
         print()
@@ -152,8 +173,12 @@ while game_on:
         print('EL JUEGO HA TERMINADO')
         print()
 
+##########################
+## FINALIZACION DE JUEGO
+
 input('Presiona enter para contabilizar las cartas y saber el ganador')
 print('El GANADOR ES:')
+
 if len(player_1.stack) > len(player_2.stack):
     print('JUGADOR 1 con ',len(player_1.stack),' cartas')
     print('jugador 2 tenia ',len(player_2.stack),' cartas')
