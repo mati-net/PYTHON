@@ -8,12 +8,9 @@ import os
 from re import finditer
 
 ## SET SOME VALUES
-# Names for machine
-machine_names = ['R2D2','C3PO','BICENTENAR MAN','COFFEE MACHINE','ALEXA','ANDROID','I ROBOT','MACHINE']
 # List of secret words to guess
 random_words = ['elefante','barco','edificio','italia','loro','urraca','mono','automovil','esperanza']
-# Random pick a machine name and a secret word
-machine = random.choice(machine_names)
+# Random pick of secret word
 secret_word = random.choice(random_words)
 
 # Init variables
@@ -50,13 +47,6 @@ clear = lambda: os.system('cls')
 print('WELCOME TO HANGMANE!')
 print('\n')
 print('LET´S PLAY!')
-print(('You will be playing versus {}').format(machine))
-
-# Request a player name
-name = input('What\'s your name? ')
-
-# Clean the console
-clear()
 
 # Draw the starting stage of hangman
 stage(attempts)
@@ -65,9 +55,6 @@ stage(attempts)
 while game_on :
     # Init repetead letter
     repeated=False
-
-    # Print who´s playing
-    print(('{} vs {} !').format(machine,name))
 
     # Request a letter
     letter_guess = input('Give a word to guess: ')
@@ -88,7 +75,7 @@ while game_on :
         if letter_guess in secret_word :
             # If in word let it know
             print(('The letter {} is in the word!').format(letter_guess))
-            # And save in which index was founded
+            # And save at what index was founded
             for m in finditer(letter_guess,secret_word):
                 guessed_letters.append(m.start())
         else:
